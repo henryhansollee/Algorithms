@@ -9,7 +9,7 @@
 | 구분 | 문제번호 |                           문제이름                           | 체크 |
 | :--: | :------: | :----------------------------------------------------------: | :--: |
 |  1   |   2383   | [점심 식사시간](https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5-BEE6AK0DFAVl) |      |
-|  2   |   2382   |                         미생물 격리                          |      |
+|  2   |   2382   | [미생물 격리](https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV597vbqAH0DFAVl) |      |
 |  3   |   1949   |                         등산로 조성                          |      |
 |  4   |   1952   |                            수영장                            |      |
 |  5   |   1953   |                         탈주범 검거                          |      |

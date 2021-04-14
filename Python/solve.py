@@ -1,62 +1,91 @@
 import sys
 sys.stdin = open('input.txt', 'r')
 
-# 1: 사람
-# 2이상: 계단의 입구이자 계단의 길이
+# SWEA: 2382. 미생물 격리
 
-# 계단의 입구는 반드시 2개이며 서로 겹치지 않음
-# 초기 입력으로 주어지는 사람의 위치와 계단 입구의 위치는 겹치지 않음
+# 정사각형 구역 안에 K개의 미생물 군집
+# 가로 N개, 세로 N개, 총 N * N의 동일한 크기의 정사각형 셀
+# 미생물들이 구역을 벗어나지 못하게 가장자리에 약품을 칠해 놈
 
-# 1. 계단 입구까지 이동 시간
-# 이동 시간(분) = | PR - SR | + | PC - SC |
-# PR, PC : 사람 P의 세로위치, 가로위치, SR, SC : 계단 입구 S의 세로위치, 가로위치
+# 1. 군집의 위치, 미생물의 수, 이동 방향 주어짐
+# 2. 약품에는 없음
+# 3. 이동 방향은 상: 1, 하: 2, 좌: 3, 우: 4
+# 4. 1시간마다 다음 셀로 이동
+# 5. 약품으로 가면 절반이 죽고, 이동방향 반대로 바뀜
+# 6. 홀수인 경우: 살아남은 미생물 수 = 원래 미생물 수를 2로 나눈 후 소수점 이하를 버림 한 값
+# 7. 두 개 이상의 군집이 한 셀에 모이면 합쳐짐
+# 8. 숫자는 더하고, 방향은 더 큰 군집꺼로
+# 9. 합쳐질 때 미생물 수가 같은 경우는 안주어지므로 고려하지 않아도 됨
 
-# 2. 계단을 내려가는 시간
-# 계단을 내려가는 시간은 계단 입구에 도착한 후부터 계단을 완전히 내려갈 때까지의 시간이다.
-# 계단 입구에 도착하면, 1분 후 아래칸으로 내려 갈 수 있다.
-# 계단 위에는 동시에 최대 3명까지만 올라가 있을 수 있다.
-# 이미 계단을 3명이 내려가고 있는 경우, 그 중 한 명이 계단을 완전히 내려갈 때까지 계단 입구에서 대기해야 한다.
-# 계단마다 길이 K가 주어지며, 계단에 올라간 후 완전히 내려가는데 K 분이 걸린다.
-
-# 모든 사람들이 계단을 내려가 이동이 완료되는 시간이 최소가 되는 경우를 찾고,
-# 그 때의 소요시간을 출력하는 프로그램을 작성하라.
+# M 시간 동안 격리
+# M 시간 후 남아있는 미생물의 수 구하기
 
 # ----------
 
-# Brute force
-# Queue
-
-# 1. 계단의 위치와 길이를 파악(계단의 입구는 반드시 2개)
-# 2. 사람의 위치 파악
-# 3. 계단과 사람 순열로 짝짓기
-
+# Step 1. 입력과 맵 그리기
 t = int(input())
 for tc in range(1, t+1):
-    n = int(input())
-    board = [list(map(int, input().split())) for _ in range(n)]
+    n, m, k = map(int, input().split())
 
-    # 1. 계단의 위치와 길이를 파악(계단의 입구는 반드시 2개)
-    # 2. 사람의 위치 파악
-    stairs = []     # (x, y, 길이)
-    people = []
+    lists = [[[0, 0, []] for _ in range(n)] for _ in range(n)]
+
+    for _ in range(k):
+        r, c, a, d = map(int, input().split())
+
+        # Step 2. 미생물들 그리기
+        lists[r][c] = [a, d, []]
+
+    dr = [0, -1, 1, 0, 0]
+    dc = [0, 0, 0, -1, 1]
+
+    # Step 3. 시간으로 반복문 돌림
+    for time in range(m):
+
+        # Step 4. 맵을 탐색해서 미생물을 타겟함
+        for r in range(n):
+            for c in range(n):
+                if lists[r][c] != [0, 0, []]:
+
+                    # Step 5. 이동을 시작함
+                    for k in range(1, 5):
+                        nr = r + dr[k]
+                        nc = c + dc[k]
+                        if 0 <= nr < n and 0 <= nc < n:
+                            if nr == 0 or nc == 0 or nr == n-1 or nc == n-1:
+                                lists[r][c][0] = int(lists[r][c][0]/2)
+                                if lists[r][c][1] == 1:
+                                    lists[r][c][1] = 2
+                                elif lists[r][c][1] == 2:
+                                    lists[r][c][1] = 1
+                                elif lists[r][c][1] == 3:
+                                    lists[r][c][1] = 4
+                                elif lists[r][c][1] == 4:
+                                    lists[r][c][1] = 3
+
+                            lists[nr][nc][2].append(lists[r][c])
+                            temp_A = -999999999
+                            temp_B = 0
+                            temp_C = 0
+                            for z in range(len(lists[nr][nc][2])):
+                                if lists[nr][nc][2][z][0] > temp_A:
+                                    temp_A = lists[nr][nc][2][z][0]
+                                    temp_B = lists[nr][nc][2][z][1]
+                                temp_C += lists[nr][nc][2][z][0]
+                            lists[nr][nc][0] = temp_C
+                            lists[nr][nc][1] = temp_B
+                            lists[nr][nc][2] = []
+                            lists[r][c] = [0, 0, []]
+
+    ans = 0
     for i in range(n):
         for j in range(n):
-            if board[i][j] == 1:
-                people.append((i, j))
-            elif board[i][j] >= 2:
-                stairs.append((i, j, board[i][j]))
-    print(stairs)
-    print(people)
-
-    # 3. 계단과 사람 순열로 짝짓기
-
-
-
-
-
-
-    for i in range(n):
-        for j in range(n):
-            print(board[i][j], end=' ')
+            print(lists[i][j], end=' ')
+            ans += lists[i][j][0]
         print()
     print()
+
+    print("#{} {}".format(tc, ans))
+
+
+
+
