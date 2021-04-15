@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('input.txt', 'r')
-
 # SWEA: 1952. 수영장
 
 # --- 문제 요약 ---
@@ -19,7 +16,7 @@ sys.stdin = open('input.txt', 'r')
 
 def search_plan(depth, price):
     global months, tickets, ans
-    if depth >= 11:
+    if depth >= 12:
         ans = min(ans, price)
         return
     search_plan(depth + 1, price + (months[depth] * tickets[0]))
