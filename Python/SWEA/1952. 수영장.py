@@ -16,7 +16,7 @@
 
 def search_plan(depth, price):
     global months, tickets, ans
-    if depth >= 12:
+    if depth >= 11:
         ans = min(ans, price)
         return
     search_plan(depth + 1, price + (months[depth] * tickets[0]))
